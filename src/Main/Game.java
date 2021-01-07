@@ -1,17 +1,21 @@
 package Main;
 
 import Fx.GameType;
+import com.sun.javafx.robot.impl.FXRobotHelper;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,13 +37,14 @@ public class Game implements Initializable {
     private ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
     private ArrayList<Cell> mines = new ArrayList<Cell>();
 
-    private int width;
-    private int height;
-    private int counts;
+    private int xRange;
+    private int yRange;
+    private int bombCounts;
+    private int cellCounts;
 
-    private final static int[][] director4 = {
-            {1, 0}, {-1, 0}, {0, 1}, {0, -1}
-    };
+//    private final static int[][] director4 = {
+//            {1, 0}, {-1, 0}, {0, 1}, {0, -1}
+//    };
 
     private final static int[][] director8 = {
             {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
@@ -47,108 +52,199 @@ public class Game implements Initializable {
 
     public Game() {
     }
-    
-    //因为使用了fxml样式，所以初始化要是用这个方法，不然会出现多线程问题
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        this.width = GameType.width;
-        this.height = GameType.height;
-        this.counts = GameType.counts;
 
-        borderPane.setPrefWidth(width * 50.0);
-        borderPane.setPrefHeight(height * 50.0 + 100.0);
-
-        mineField.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                Cell cell = null;
-                try {
-                    cell = (Cell) event.getTarget();
-                    MouseButton mouseButton = event.getButton();
-                    int x = cell.getX() , y = cell.getY();
-                    switch (mouseButton) {
-                        case PRIMARY:       //鼠标左键事件
-                            if (!cell.isOpened()) {
+    private final EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            Cell cell = null;
+            try {
+                cell = (Cell) event.getTarget();
+                MouseButton mouseButton = event.getButton();
+                int x = cell.getX() , y = cell.getY();
+                switch (mouseButton) {
+                    case PRIMARY:       //鼠标左键事件
+                        if (!cell.isOpened()) {
+                            if (cell.isFlag()) {
+                                cell.flip();
+                            } else {
                                 if (cell.isMine()) {
                                     gameOver(x,y);
                                 } else {
-                                    cell.sweep();
-                                    for (int i = 0; i < 4; i++) {
-                                        int xx = x + director4[i][0], yy = y + director4[i][1];
-                                        dfsSweep(xx, yy);
-                                    }
+                                    cellCounts -= dfsSweep(x, y);
                                 }
                             }
-                            break;
-                        case SECONDARY:     //鼠标右键事件
-//                            if (cell.isOpened()) {
-//                                cell.isFlag = true;
-//                                cell.setText("旗");
-//                            }
-                            break;
-                    }
-                }catch (ClassCastException e) {
-
+                        } else {
+                            if(cell.getCounts() != 0) {
+                                //当已经被打开了就使用自动打开，如果有错误的旗子就游戏结束
+                                Cell escapeMine = null;
+                                if ((escapeMine = autoOpen(x, y, cell.getCounts())) != null) {
+                                    gameOver(escapeMine.getX(), escapeMine.getY());
+                                }
+                            }
+                        }
+                        break;
+                    case SECONDARY:     //鼠标右键事件
+                        if (!cell.isOpened()) {
+                            cell.turnFlagStatus();
+                        }
+                        break;
                 }
+                if(cellCounts == bombCounts) {
+                    System.out.println("win");
+                }
+            }catch (ClassCastException e) {
+                //点到按钮中的图片或者文字时进入exception，把事件给cell，接着就会被flowPane监听到并且给cell本身处理
+                ((Node)event.getTarget()).getParent().fireEvent(event);
+            }
+        }
+    };
 
+    //因为使用了fxml样式，所以初始化要是用这个方法，不然会出现多线程问题
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        //设置关闭事件，返回上一个窗口
+        ObservableList<Stage> stages = FXRobotHelper.getStages();
+        stages.get(0).setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                new Utils().newWindow("扫雷", "../Fx/Greeting.fxml");
             }
         });
 
-        for (int i = 0; i < height; i++) {
+        this.xRange = GameType.xRange;
+        this.yRange = GameType.yRange;
+        setCellsAppearance();
+        this.bombCounts = GameType.counts;
+        this.cellCounts = this.xRange * this.yRange;
+
+        borderPane.setPrefWidth(this.xRange * Cell.cellWidth);
+        borderPane.setPrefHeight(this.yRange * Cell.cellHeight + 100.0);
+
+        mineField.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+
+        creatMineField();
+    }
+
+    private void setCellsAppearance() {
+        int maxRange = Math.max(xRange, yRange);
+        final int maxWidth = 50, maxHeight = 50;
+        final int minWidth = 35, minHeight = 35;
+        if(maxRange <= 10) {
+            Cell.setAppearance(maxWidth, maxWidth);
+        } else {
+            int width = (int)Math.max(minWidth, 10.0 / maxRange * maxWidth );
+            int height = (int)Math.max(minHeight, 10.0 / maxRange * maxHeight );
+            Cell.setAppearance(width, height);
+        }
+    }
+
+    private void creatMineField() {
+        for (int i = 0; i < xRange; i++) {
             ArrayList<Cell> cellArr = new ArrayList<Cell>();
-            for (int j = 0; j < width; j++) {
+            for (int j = 0; j < yRange; j++) {
                 cellArr.add(new Cell(i,j));
             }
             cells.add(cellArr);
         }
 
-//        mineField.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-//
-//            @Override
-//            public void handle(MouseEvent event) {
-//                System.out.println("123");
-//            }
-//
-//        });
-
         for (ArrayList<Cell> cellArr : cells) {
-            for (Button cell : cellArr) {
+            for (Cell cell : cellArr) {
                 mineField.getChildren().add(cell);
-                cell.setPrefHeight(50);
-                cell.setPrefWidth(50);
             }
         }
 
         Random random = new Random();
-        for (int i = 1; i <= counts; i++) {
-            int x = random.nextInt(width);
-            int y = random.nextInt(height);
+        for (int i = 1; i <= bombCounts; i++) {
+            int x = random.nextInt(this.xRange);
+            int y = random.nextInt(this.yRange);
             while (cells.get(x).get(y).isMine()) {
-                x = random.nextInt(width);
-                y = random.nextInt(height);
+                x = random.nextInt(this.xRange);
+                y = random.nextInt(this.yRange);
             }
             cells.get(x).get(y).setMine(true);
             mines.add(cells.get(x).get(y));
         }
 
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int cnt = 0;
+        for (int i = 0; i < xRange; i++) {
+            for (int j = 0; j < yRange; j++) {
+                int count = 0;
                 for (int k = 0; k < 8; k++) {
                     int x = i + director8[k][0], y = j + director8[k][1];
                     if (judge(x, y) && cells.get(x).get(y).isMine()) {
-                        cnt++;
+                        count++;
                     }
                 }
-                cells.get(i).get(j).setCounts(cnt);
+                cells.get(i).get(j).setCounts(count);
             }
         }
+    }
+
+    private boolean judge(int x, int y) {
+        return (x >= 0 && x < this.xRange) && (y >= 0 && y < this.yRange);
+    }
+
+    private Cell autoOpen(int x, int y,int correctCount) {
+        int count = 0;
+        Cell escapeMine = null;
+        for(int[] i:director8) {
+            int xx = x + i[0],yy = y + i[1];
+            if(judge(xx,yy)) {
+                if(cells.get(xx).get(yy).isFlag()) {
+                    count++;
+                } else {
+                    if(cells.get(xx).get(yy).isMine()) {
+                        escapeMine = cells.get(xx).get(yy);
+                    }
+                }
+            }
+        }
+
+        if(count == correctCount) {
+            if(escapeMine == null) {
+                for (int[] i : director8) {
+                    int xx = x + i[0], yy = y + i[1];
+                    if (judge(xx, yy) && !cells.get(xx).get(yy).isFlag()) {
+                        this.cellCounts -= dfsSweep(xx, yy);
+                    }
+                }
+            }
+            return escapeMine;
+        } else {
+            return null;
+        }
+    }
+
+
+    private int dfsSweep(int x, int y) {
+        if(!judge(x,y)) return 0;
+        Cell cell = cells.get(x).get(y);
+        if(cell.isMine() || cell.isOpened() || cell.isFlag()) return 0;
+        int count = 0;
+        cell.sweep();
+        count++;
+        if(cell.getCounts() > 0) return count;
+        for(int[] i:director8) {
+            int xx = x + i[0], yy = y + i[1];
+            count += dfsSweep(xx, yy);
+        }
+        return count;
+    }
+
+    private void restart() {
+        for (ArrayList<Cell> cellArr : cells) {
+            for (Cell cell : cellArr) {
+                cell.flip();
+            }
+        }
+        this.cellCounts = this.xRange * this.yRange;
     }
 
     private void gameOver(int x, int y) {
         cells.get(x).get(y).turnChooseBomb();
         for(Cell mine : mines) {
-            mine.turnBomb();
+            if (mine.getX() != x || mine.getY() != y) {
+                mine.turnBomb();
+            }
         }
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("游戏结束");
@@ -156,26 +252,12 @@ public class Game implements Initializable {
         alert.setContentText("你想要重新开始吗?");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
-            mineField = new FlowPane();
+            //按当前情况重新开始
+            restart();
         } else {
-            // ... user chose CANCEL or closed the dialog
+            //取消时去除事件监听
+            mineField.removeEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
         }
-    }
-
-    private void dfsSweep(int x, int y) {
-        if(!judge(x,y)) return ;
-        Cell cell = cells.get(x).get(y);
-        if(cell.getCounts() != 0 || cell.isMine() || cell.isOpened()) return ;
-        cell.sweep();
-        for (int i = 0; i < 4; i++) {
-            int xx = x + director4[i][0], yy = y + director4[i][1];
-            dfsSweep(xx, yy);
-        }
-        return ;
-    }
-
-    private boolean judge(int x, int y) {
-        return (x >= 0 && x < this.width) && (y >= 0 && y < this.height);
     }
 
 }

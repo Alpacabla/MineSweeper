@@ -2,8 +2,8 @@ package Fx;
 
 public class GameType {
 
-    public static int width;
-    public static int height;
+    public static int xRange;
+    public static int yRange;
     public static int counts;
 
 }

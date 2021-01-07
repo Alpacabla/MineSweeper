@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Main.Game">
+<BorderPane fx:id="borderPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="50.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Main.Game">
    <center>
       <FlowPane fx:id="mineField" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
