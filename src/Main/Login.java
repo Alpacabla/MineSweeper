@@ -8,13 +8,16 @@ import javafx.scene.control.TextField;
 public class Controller {
 
     @FXML
-    private Button RegisteButton;
+    private TextField LoginUsername;
 
     @FXML
     private Button LogInButton;
 
     @FXML
-    private TextField Username;
+    private TextField RegisteUsername;
+
+    @FXML
+    private Button RegisteButton;
 
     public void LogIn() {
         new Utils().changeStage(FXRobotHelper.getStages().get(0), "../Fx/Greeting.fxml");
