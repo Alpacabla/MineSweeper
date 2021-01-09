@@ -1,7 +1,5 @@
-package Fx;
+package Main;
 
-import Main.EasyTransFromWindow;
-import Main.Utils;
 import com.sun.javafx.robot.impl.FXRobotHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,14 +38,17 @@ public class Greeting implements Initializable {
     private TextField NumberOfMine;
 
     public void setEasyStart() throws Exception {
+        EasyTransFromWindow.gameType = EasyTransFromWindow.GAMETYPE.EASY;
         start(8, 8, 10);
     }
 
     public void setMediumStart() throws Exception {
+        EasyTransFromWindow.gameType = EasyTransFromWindow.GAMETYPE.MEDIUM;
         start(16, 16, 40);
     }
 
     public void setHardStart() throws Exception {
+        EasyTransFromWindow.gameType = EasyTransFromWindow.GAMETYPE.HARD;
         start(30, 30, 99);
     }
 
@@ -56,6 +57,7 @@ public class Greeting implements Initializable {
             int x = getLegalNumberFromTextField(XRange, 5, 30);
             int y = getLegalNumberFromTextField(YRange, 5, 30);
             int count = getLegalNumberFromTextField(NumberOfMine, 1, x * y - 1);
+            EasyTransFromWindow.gameType = EasyTransFromWindow.GAMETYPE.NONE;
             start(x, y, count);
         } catch (Exception e) {
             new Utils().showAnAlert(Alert.AlertType.INFORMATION, "数据范围有误", "请确保输入的数据合法，高宽范围在5到30之间，且雷至少有一个");
@@ -81,8 +83,7 @@ public class Greeting implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        UsernameLabel.setStyle("-fx-font-size:28;-fx-font:bold;");
+        UsernameLabel.setStyle("-fx-font-size:27;-fx-font:bold;");
         UsernameLabel.setText(EasyTransFromWindow.name);
-
     }
 }

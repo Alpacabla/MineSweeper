@@ -1,4 +1,4 @@
-package Fx;
+package Main;
 
 public class EasyTransFromWindow {
 
@@ -8,6 +8,11 @@ public class EasyTransFromWindow {
     public static int xRange;
     public static int yRange;
     public static int counts;
+    public static GAMETYPE gameType;
+
+    public enum GAMETYPE {
+        EASY, MEDIUM, HARD, NONE
+    }
 
     //登录的用户名
     public static String name;

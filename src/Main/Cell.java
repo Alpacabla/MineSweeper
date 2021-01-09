@@ -35,8 +35,8 @@ public class Cell extends Button {
     public static void setAppearance(int width, int height) {
         Cell.cellWidth = width;
         Cell.cellHeight = height;
-        Cell.imageWidth = (int)Math.min(width - 20, Cell.cellWidth * imageResize);
-        Cell.imageHeight = (int)Math.min(height - 20, Cell.cellHeight * imageResize);
+        Cell.imageWidth = width - 20;
+        Cell.imageHeight = height - 20;
     }
 
     public void sweep() {
@@ -105,12 +105,11 @@ public class Cell extends Button {
     }
 
     public void turnChooseBomb() {
-        this.setGraphic(new ImageView(new Image("/ImageSrc/Exploded.png",imageWidth,imageHeight,false,true)));
-        //this.setStyle("-fx-base:red");
+        this.setGraphic(new ImageView(new Image("/ImageSrc/Exploded.png", imageWidth, imageHeight, false, true)));
     }
 
     public void turnBomb() {
-        this.setGraphic(new ImageView(new Image("/ImageSrc/Mine.png",imageWidth,imageHeight,false,true)));
+        this.setGraphic(new ImageView(new Image("/ImageSrc/Mine.png", imageWidth, imageHeight, false, true)));
     }
 
     public void turnFlagStatus() {
@@ -121,10 +120,10 @@ public class Cell extends Button {
                 this.setGraphic(null);
                 break;
             case 1:
-                this.setGraphic(new ImageView(new Image("/ImageSrc/Flag.png",imageWidth,imageHeight,false,true)));
+                this.setGraphic(new ImageView(new Image("/ImageSrc/Flag.png", imageWidth, imageHeight, false, true)));
                 break;
             case 2:
-                this.setGraphic(new ImageView(new Image("/ImageSrc/FlagQuestion.png",imageWidth,imageHeight,false,true)));
+                this.setGraphic(new ImageView(new Image("/ImageSrc/FlagQuestion.png", imageWidth, imageHeight, false, true)));
                 break;
         }
     }

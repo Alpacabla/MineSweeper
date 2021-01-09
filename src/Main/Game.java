@@ -1,15 +1,11 @@
 package Main;
 
-import Fx.GameType;
 import com.sun.javafx.robot.impl.FXRobotHelper;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -19,7 +15,6 @@ import javafx.stage.WindowEvent;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -31,8 +26,8 @@ public class Game implements Initializable {
     @FXML
     private FlowPane mineField;
 
-    @FXML
-    private Label timer;
+
+    private Timer timer;
 
     private ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
     private ArrayList<Cell> mines = new ArrayList<Cell>();
@@ -60,7 +55,7 @@ public class Game implements Initializable {
             try {
                 cell = (Cell) event.getTarget();
                 MouseButton mouseButton = event.getButton();
-                int x = cell.getX() , y = cell.getY();
+                int x = cell.getX(), y = cell.getY();
                 switch (mouseButton) {
                     case PRIMARY:       //鼠标左键事件
                         if (!cell.isOpened()) {
@@ -68,17 +63,17 @@ public class Game implements Initializable {
                                 cell.flip();
                             } else {
                                 if (cell.isMine()) {
-                                    gameOver(x,y);
+                                    failure(x, y);
                                 } else {
                                     cellCounts -= dfsSweep(x, y);
                                 }
                             }
                         } else {
-                            if(cell.getCounts() != 0) {
+                            if (cell.getCounts() != 0) {
                                 //当已经被打开了就使用自动打开，如果有错误的旗子就游戏结束
                                 Cell escapeMine = null;
                                 if ((escapeMine = autoOpen(x, y, cell.getCounts())) != null) {
-                                    gameOver(escapeMine.getX(), escapeMine.getY());
+                                    failure(escapeMine.getX(), escapeMine.getY());
                                 }
                             }
                         }
@@ -89,12 +84,12 @@ public class Game implements Initializable {
                         }
                         break;
                 }
-                if(cellCounts == bombCounts) {
-                    System.out.println("win");
+                if (cellCounts == bombCounts) {
+                    succeed();
                 }
-            }catch (ClassCastException e) {
+            } catch (ClassCastException e) {
                 //点到按钮中的图片或者文字时进入exception，把事件给cell，接着就会被flowPane监听到并且给cell本身处理
-                ((Node)event.getTarget()).getParent().fireEvent(event);
+                ((Node) event.getTarget()).getParent().fireEvent(event);
             }
         }
     };
@@ -107,20 +102,25 @@ public class Game implements Initializable {
         stages.get(0).setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
+                timer.stop();
                 new Utils().newWindow("扫雷", "../Fx/Greeting.fxml");
             }
         });
 
-        this.xRange = GameType.xRange;
-        this.yRange = GameType.yRange;
+        this.xRange = EasyTransFromWindow.xRange;
+        this.yRange = EasyTransFromWindow.yRange;
         setCellsAppearance();
-        this.bombCounts = GameType.counts;
+        this.bombCounts = EasyTransFromWindow.counts;
         this.cellCounts = this.xRange * this.yRange;
 
         borderPane.setPrefWidth(this.xRange * Cell.cellWidth);
         borderPane.setPrefHeight(this.yRange * Cell.cellHeight + 100.0);
 
         mineField.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+
+        timer = new Timer();
+        timer.start();
+        borderPane.setTop(timer);
 
         creatMineField();
     }
@@ -129,11 +129,11 @@ public class Game implements Initializable {
         int maxRange = Math.max(xRange, yRange);
         final int maxWidth = 50, maxHeight = 50;
         final int minWidth = 35, minHeight = 35;
-        if(maxRange <= 10) {
+        if (maxRange <= 10) {
             Cell.setAppearance(maxWidth, maxWidth);
         } else {
-            int width = (int)Math.max(minWidth, 10.0 / maxRange * maxWidth );
-            int height = (int)Math.max(minHeight, 10.0 / maxRange * maxHeight );
+            int width = (int) Math.max(minWidth, 10.0 / maxRange * maxWidth);
+            int height = (int) Math.max(minHeight, 10.0 / maxRange * maxHeight);
             Cell.setAppearance(width, height);
         }
     }
@@ -142,7 +142,7 @@ public class Game implements Initializable {
         for (int i = 0; i < xRange; i++) {
             ArrayList<Cell> cellArr = new ArrayList<Cell>();
             for (int j = 0; j < yRange; j++) {
-                cellArr.add(new Cell(i,j));
+                cellArr.add(new Cell(i, j));
             }
             cells.add(cellArr);
         }
@@ -177,30 +177,31 @@ public class Game implements Initializable {
                 cells.get(i).get(j).setCounts(count);
             }
         }
+
     }
 
     private boolean judge(int x, int y) {
         return (x >= 0 && x < this.xRange) && (y >= 0 && y < this.yRange);
     }
 
-    private Cell autoOpen(int x, int y,int correctCount) {
+    private Cell autoOpen(int x, int y, int correctCount) {
         int count = 0;
         Cell escapeMine = null;
-        for(int[] i:director8) {
-            int xx = x + i[0],yy = y + i[1];
-            if(judge(xx,yy)) {
-                if(cells.get(xx).get(yy).isFlag()) {
+        for (int[] i : director8) {
+            int xx = x + i[0], yy = y + i[1];
+            if (judge(xx, yy)) {
+                if (cells.get(xx).get(yy).isFlag()) {
                     count++;
                 } else {
-                    if(cells.get(xx).get(yy).isMine()) {
+                    if (cells.get(xx).get(yy).isMine()) {
                         escapeMine = cells.get(xx).get(yy);
                     }
                 }
             }
         }
 
-        if(count == correctCount) {
-            if(escapeMine == null) {
+        if (count == correctCount) {
+            if (escapeMine == null) {
                 for (int[] i : director8) {
                     int xx = x + i[0], yy = y + i[1];
                     if (judge(xx, yy) && !cells.get(xx).get(yy).isFlag()) {
@@ -216,14 +217,14 @@ public class Game implements Initializable {
 
 
     private int dfsSweep(int x, int y) {
-        if(!judge(x,y)) return 0;
+        if (!judge(x, y)) return 0;
         Cell cell = cells.get(x).get(y);
-        if(cell.isMine() || cell.isOpened() || cell.isFlag()) return 0;
+        if (cell.isMine() || cell.isOpened() || cell.isFlag()) return 0;
         int count = 0;
         cell.sweep();
         count++;
-        if(cell.getCounts() > 0) return count;
-        for(int[] i:director8) {
+        if (cell.getCounts() > 0) return count;
+        for (int[] i : director8) {
             int xx = x + i[0], yy = y + i[1];
             count += dfsSweep(xx, yy);
         }
@@ -239,19 +240,18 @@ public class Game implements Initializable {
         this.cellCounts = this.xRange * this.yRange;
     }
 
-    private void gameOver(int x, int y) {
+    private void succeed() {
+
+    }
+
+    private void failure(int x, int y) {
         cells.get(x).get(y).turnChooseBomb();
-        for(Cell mine : mines) {
+        for (Cell mine : mines) {
             if (mine.getX() != x || mine.getY() != y) {
                 mine.turnBomb();
             }
         }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("游戏结束");
-        alert.setHeaderText(null);
-        alert.setContentText("你想要重新开始吗?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (new Utils().showAnConfirm("游戏结束", "你想要重新开始吗?") == true) {
             //按当前情况重新开始
             restart();
         } else {
@@ -259,6 +259,5 @@ public class Game implements Initializable {
             mineField.removeEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
         }
     }
-
 }
 
