@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-         prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1"
-         xmlns:fx="http://javafx.com/fxml/1" fx:controller="Main.Rank">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="457.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Main.Rank">
     <tabs>
         <Tab text="个人排行">
             <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="411.0" prefWidth="800.0">
                     <children>
-                        <ListView fx:id="personalEasyList" layoutX="14.0" layoutY="36.0" prefHeight="320.0"
-                                  prefWidth="162.0"/>
-                        <ListView fx:id="personalMediumList" layoutX="219.0" layoutY="36.0" prefHeight="320.0"
-                                  prefWidth="162.0"/>
-                        <ListView fx:id="personalHardList" layoutX="423.0" layoutY="36.0" prefHeight="320.0"
-                                  prefWidth="162.0"/>
-                        <Text layoutX="83.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="简单"/>
-                        <Text layoutX="288.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="中等"/>
-                        <Text layoutX="492.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="困难"/>
+                        <TableView fx:id="personalEasyTable" layoutX="14.0" layoutY="36.0" prefHeight="370.0" prefWidth="200.0">
+                     <columns>
+                        <TableColumn fx:id="column1_1" prefWidth="37.5999755859375" text="排名" />
+                        <TableColumn fx:id="column1_2" prefWidth="88.79998779296875" text="用户名" />
+                        <TableColumn fx:id="column1_3" prefWidth="78.39999389648438" text="时间" />
+                     </columns></TableView>
+                        <TableView fx:id="personalMediumTable" layoutX="300.0" layoutY="36.0" prefHeight="370.0" prefWidth="200.0">
+                     <columns>
+                        <TableColumn fx:id="column1_4" prefWidth="37.5999755859375" text="排名" />
+                        <TableColumn fx:id="column1_5" prefWidth="84.800048828125" text="用户名" />
+                        <TableColumn fx:id="column1_6" prefWidth="78.39999389648438" text="时间" />
+                     </columns></TableView>
+                        <TableView fx:id="personalHardTable" layoutX="586.0" layoutY="36.0" prefHeight="370.0" prefWidth="200.0">
+                     <columns>
+                        <TableColumn fx:id="column1_7" prefWidth="37.5999755859375" text="排名" />
+                        <TableColumn fx:id="column1_8" prefWidth="84.800048828125" text="用户名" />
+                        <TableColumn fx:id="column1_9" prefWidth="78.39999389648438" text="时间" />
+                     </columns></TableView>
+                        <Text layoutX="102.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="简单" />
+                        <Text layoutX="388.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="中等" />
+                        <Text layoutX="674.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="困难" />
                     </children>
                 </AnchorPane>
             </content>
@@ -31,15 +42,27 @@
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <ListView fx:id="allEasyList" layoutX="14.0" layoutY="36.0" prefHeight="320.0"
-                                  prefWidth="162.0"/>
-                        <ListView fx:id="allMediumList" layoutX="219.0" layoutY="36.0" prefHeight="320.0"
-                                  prefWidth="162.0"/>
-                        <ListView fx:id="allHardList" layoutX="423.0" layoutY="36.0" prefHeight="320.0"
-                                  prefWidth="162.0"/>
-                        <Text layoutX="83.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="简单"/>
-                        <Text layoutX="288.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="中等"/>
-                        <Text layoutX="492.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="困难"/>
+                        <TableView fx:id="allEasyTable" layoutX="14.0" layoutY="36.0" prefHeight="370.0" prefWidth="200.0">
+                     <columns>
+                        <TableColumn fx:id="column2_1" prefWidth="37.5999755859375" text="排名" />
+                        <TableColumn fx:id="column2_2" prefWidth="84.800048828125" text="用户名" />
+                        <TableColumn fx:id="column2_3" prefWidth="78.39999389648438" text="时间" />
+                     </columns></TableView>
+                        <TableView fx:id="allMediumTable" layoutX="300.0" layoutY="36.0" prefHeight="370.0" prefWidth="200.0">
+                     <columns>
+                        <TableColumn fx:id="column2_4" prefWidth="37.5999755859375" text="排名" />
+                        <TableColumn fx:id="column2_5" prefWidth="84.800048828125" text="用户名" />
+                        <TableColumn fx:id="column2_6" prefWidth="78.39999389648438" text="时间" />
+                     </columns></TableView>
+                        <TableView fx:id="allHardTable" layoutX="586.0" layoutY="36.0" prefHeight="370.0" prefWidth="200.0">
+                     <columns>
+                        <TableColumn fx:id="column2_7" prefWidth="37.5999755859375" text="排名" />
+                        <TableColumn fx:id="column2_8" prefWidth="84.800048828125" text="用户名" />
+                        <TableColumn fx:id="column2_9" prefWidth="78.39999389648438" text="时间" />
+                     </columns></TableView>
+                        <Text layoutX="102.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="简单" />
+                        <Text layoutX="388.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="中等" />
+                        <Text layoutX="674.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="困难" />
                     </children>
                 </AnchorPane>
             </content>

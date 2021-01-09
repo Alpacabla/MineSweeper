@@ -41,9 +41,10 @@ public class Cell extends Button {
 
     public void sweep() {
         this.setOpened(true);
-        this.setStyle("-fx-base:DarkSlateGray");
+        this.setStyle("-fx-base:Gray");
         if (this.getCounts() > 0) {
-            this.setText("" + this.getCounts());
+            String url = "/ImageSrc/" + this.getCounts() + "mines.png";
+            this.setGraphic(new ImageView(new Image(url, imageWidth, imageHeight, false, true)));
         }
         this.setFlagStatus(0);
     }

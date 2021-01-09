@@ -10,6 +10,7 @@ public class Timer extends Label {
     private long time = 0;
 
     Thread timer = null;
+    private boolean status = true;
 
     public void start() {
         this.setWidth(100);
@@ -25,7 +26,7 @@ public class Timer extends Label {
                 //必须要用platform.runlater来执行，否则会出现线程错误
 
                 Timer timer = this;
-                while (true) {
+                while (status) {
                     time++;
                     Thread.sleep(100);
                     if (time >= lastSecond[0]) {
@@ -48,9 +49,9 @@ public class Timer extends Label {
         timer.start();
     }
 
+    //就算有多线程风险也没关系，总之只差了几毫秒
     public void stop() {
-        timer.interrupt();
-        return;
+        status = false;
     }
 
     public long getTime() {

@@ -1,11 +1,13 @@
 package Main;
 
+import Main.EasyTransFromWindow.GAMETYPE;
 import com.sun.javafx.robot.impl.FXRobotHelper;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -26,26 +28,29 @@ public class Game implements Initializable {
     @FXML
     private FlowPane mineField;
 
-
     private Timer timer;
 
     private ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
     private ArrayList<Cell> mines = new ArrayList<Cell>();
 
-    private int xRange;
-    private int yRange;
-    private int bombCounts;
-    private int cellCounts;
-
-//    private final static int[][] director4 = {
-//            {1, 0}, {-1, 0}, {0, 1}, {0, -1}
-//    };
+    private String name = null;
+    private GAMETYPE gameType = GAMETYPE.EASY;
+    private int xRange = 8;
+    private int yRange = 8;
+    private int bombCounts = 10;
+    private int cellCounts = xRange * yRange;
 
     private final static int[][] director8 = {
             {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
     };
 
-    public Game() {
+    public void openRank() {
+        new Utils().openRank();
+    }
+
+    public void reStart() {
+        timer.stop();
+        new Utils().changeStage(FXRobotHelper.getStages().get(0), "../Fx/Game.fxml");
     }
 
     private final EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
@@ -97,21 +102,17 @@ public class Game implements Initializable {
     //因为使用了fxml样式，所以初始化要是用这个方法，不然会出现多线程问题
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //设置关闭事件，返回上一个窗口
-        ObservableList<Stage> stages = FXRobotHelper.getStages();
-        stages.get(0).setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                timer.stop();
-                new Utils().newWindow("扫雷", "../Fx/Greeting.fxml");
-            }
-        });
 
+        this.cells.clear();
+
+        this.name = EasyTransFromWindow.name;
+        this.gameType = EasyTransFromWindow.gameType;
         this.xRange = EasyTransFromWindow.xRange;
         this.yRange = EasyTransFromWindow.yRange;
-        setCellsAppearance();
         this.bombCounts = EasyTransFromWindow.counts;
         this.cellCounts = this.xRange * this.yRange;
+
+        setCellsAppearance();
 
         borderPane.setPrefWidth(this.xRange * Cell.cellWidth);
         borderPane.setPrefHeight(this.yRange * Cell.cellHeight + 100.0);
@@ -123,6 +124,16 @@ public class Game implements Initializable {
         borderPane.setTop(timer);
 
         creatMineField();
+
+        //设置关闭事件，返回上一个窗口
+        ObservableList<Stage> stages = FXRobotHelper.getStages();
+        stages.get(0).setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                timer.stop();
+                new Utils().newWindow("扫雷", "../Fx/Greeting.fxml");
+            }
+        });
     }
 
     private void setCellsAppearance() {
@@ -177,7 +188,6 @@ public class Game implements Initializable {
                 cells.get(i).get(j).setCounts(count);
             }
         }
-
     }
 
     private boolean judge(int x, int y) {
@@ -231,16 +241,37 @@ public class Game implements Initializable {
         return count;
     }
 
-    private void restart() {
+    private void flipAll() {
         for (ArrayList<Cell> cellArr : cells) {
             for (Cell cell : cellArr) {
                 cell.flip();
             }
         }
         this.cellCounts = this.xRange * this.yRange;
+        this.gameType = GAMETYPE.NONE;
     }
 
     private void succeed() {
+        timer.stop();
+        long grade = timer.getTime();
+        String result = "" + (timer.getTime() / 10) + "." + (timer.getTime() % 10);
+        mineField.removeEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+
+        if (gameType != GAMETYPE.NONE) {
+            if (new Utils().writeAGrade(name, gameType, grade) == true) {
+                new Utils().showAnAlert(Alert.AlertType.INFORMATION,
+                        "胜利!", "扫雷成功，你的耗时为：" + result + "秒" +
+                                "\n突破历史记录！");
+            } else {
+                new Utils().showAnAlert(Alert.AlertType.INFORMATION,
+                        "胜利!", "扫雷成功，你的耗时为：" + result + "秒" +
+                                "\n并没有突破历史记录。呜呜呜。");
+            }
+        } else {
+            new Utils().showAnAlert(Alert.AlertType.INFORMATION,
+                    "胜利!", "扫雷成功，你的耗时为：" + result + "秒" +
+                            "\n本次不计入成绩");
+        }
 
     }
 
@@ -251,9 +282,9 @@ public class Game implements Initializable {
                 mine.turnBomb();
             }
         }
-        if (new Utils().showAnConfirm("游戏结束", "你想要重新开始吗?") == true) {
+        if (new Utils().showAnConfirm("游戏结束", "你想要重新开始吗?\n当前情况重新开始不会计分，雷与上一次位置相同。") == true) {
             //按当前情况重新开始
-            restart();
+            flipAll();
         } else {
             //取消时去除事件监听
             mineField.removeEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);

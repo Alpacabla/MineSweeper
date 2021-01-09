@@ -5,26 +5,21 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="Main.Greeting">
+<AnchorPane prefHeight="356.0" prefWidth="425.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Main.Greeting">
     <children>
-        <Button fx:id="EasyStart" layoutX="63.0" layoutY="149.0" mnemonicParsing="false" onAction="#setEasyStart"
-                prefHeight="23.0" prefWidth="78.0" text="简单"/>
-        <Label layoutX="44.0" layoutY="48.0" prefHeight="15.0" prefWidth="78.0" text="欢迎！"/>
-        <Label fx:id="UsernameLabel" layoutX="63.0" layoutY="70.0" prefHeight="32.0" prefWidth="486.0" text="NULL"
-               textFill="#7b398f"/>
-        <Label layoutX="63.0" layoutY="110.0" prefHeight="15.0" prefWidth="486.0" text="开始一局游戏，请首先选择一个难度"/>
-        <Button fx:id="MediumStart" layoutX="180.0" layoutY="149.0" mnemonicParsing="false" onAction="#setMediumStart"
-                prefHeight="23.0" prefWidth="78.0" text="中等"/>
-        <Button fx:id="HardStart" layoutX="297.0" layoutY="149.0" mnemonicParsing="false" onAction="#setHardStart"
-                prefHeight="23.0" prefWidth="78.0" text="困难"/>
-        <Button fx:id="CustomStart" layoutX="297.0" layoutY="225.0" mnemonicParsing="false" onAction="#setCustomStart"
-                prefHeight="23.0" prefWidth="78.0" text="自定义开始"/>
-        <TextField fx:id="XRange" layoutX="63.0" layoutY="225.0" prefHeight="23.0" prefWidth="45.0"/>
-        <TextField fx:id="YRange" layoutX="141.0" layoutY="225.0" prefHeight="23.0" prefWidth="45.0"/>
-        <TextField fx:id="NumberOfMine" layoutX="219.0" layoutY="225.0" prefHeight="23.0" prefWidth="45.0"/>
-        <Label layoutX="63.0" layoutY="207.0" prefHeight="15.0" prefWidth="38.0" text="宽度"/>
-        <Label layoutX="141.0" layoutY="207.0" prefHeight="15.0" prefWidth="38.0" text="高度"/>
-        <Label layoutX="222.0" layoutY="207.0" prefHeight="15.0" prefWidth="38.0" text="雷数"/>
+        <Button fx:id="EasyStart" layoutX="63.0" layoutY="149.0" mnemonicParsing="false" onAction="#setEasyStart" prefHeight="23.0" prefWidth="78.0" text="简单" />
+        <Label layoutX="44.0" layoutY="48.0" prefHeight="15.0" prefWidth="78.0" text="欢迎！" />
+        <Label fx:id="UsernameLabel" layoutX="63.0" layoutY="70.0" prefHeight="32.0" prefWidth="486.0" text="NULL" textFill="#7b398f" />
+        <Label layoutX="63.0" layoutY="110.0" prefHeight="15.0" prefWidth="486.0" text="开始一局游戏，请首先选择一个难度" />
+        <Button fx:id="MediumStart" layoutX="180.0" layoutY="149.0" mnemonicParsing="false" onAction="#setMediumStart" prefHeight="23.0" prefWidth="78.0" text="中等" />
+        <Button fx:id="HardStart" layoutX="297.0" layoutY="149.0" mnemonicParsing="false" onAction="#setHardStart" prefHeight="23.0" prefWidth="78.0" text="困难" />
+        <Button fx:id="CustomStart" layoutX="297.0" layoutY="225.0" mnemonicParsing="false" onAction="#setCustomStart" prefHeight="23.0" prefWidth="78.0" text="自定义开始" />
+        <TextField fx:id="XRange" layoutX="63.0" layoutY="225.0" prefHeight="23.0" prefWidth="45.0" />
+        <TextField fx:id="YRange" layoutX="141.0" layoutY="225.0" prefHeight="23.0" prefWidth="45.0" />
+        <TextField fx:id="NumberOfMine" layoutX="219.0" layoutY="225.0" prefHeight="23.0" prefWidth="45.0" />
+        <Label layoutX="63.0" layoutY="207.0" prefHeight="15.0" prefWidth="38.0" text="宽度" />
+        <Label layoutX="141.0" layoutY="207.0" prefHeight="15.0" prefWidth="38.0" text="高度" />
+        <Label layoutX="222.0" layoutY="207.0" prefHeight="15.0" prefWidth="38.0" text="雷数" />
+      <Button layoutX="179.0" layoutY="304.0" mnemonicParsing="false" onAction="#openRank" prefHeight="23.0" prefWidth="78.0" text="排行榜" />
     </children>
 </AnchorPane>

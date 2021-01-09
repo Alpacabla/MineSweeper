@@ -11,9 +11,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("../Fx/sample.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("../Fx/Login.fxml"));
         primaryStage.setTitle("扫雷");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setScene(new Scene(root));
         primaryStage.getIcons().add(new Image("/ImageSrc/MineSweeperIcon.png"));
         primaryStage.show();
     }

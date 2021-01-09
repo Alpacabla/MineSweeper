@@ -11,10 +11,23 @@ public class EasyTransFromWindow {
     public static GAMETYPE gameType;
 
     public enum GAMETYPE {
-        EASY, MEDIUM, HARD, NONE
+        EASY("easyrank"), MEDIUM("mediumrank"), HARD("hardrank"), NONE("none");
+
+        String tableName;
+        GAMETYPE(String dateTableName) {
+            this.tableName = dateTableName;
+        }
+
+        public String getTableName() {
+            return this.tableName;
+        }
     }
 
+    public final static GAMETYPE[] GAMETYPES = new GAMETYPE[] {
+            GAMETYPE.EASY, GAMETYPE.MEDIUM, GAMETYPE.HARD
+    };
+
     //登录的用户名
-    public static String name;
+    public static String name = "root";
 
 }

@@ -37,6 +37,10 @@ public class Greeting implements Initializable {
     @FXML
     private TextField NumberOfMine;
 
+    public void openRank() {
+        new Utils().openRank();
+    }
+
     public void setEasyStart() throws Exception {
         EasyTransFromWindow.gameType = EasyTransFromWindow.GAMETYPE.EASY;
         start(8, 8, 10);
@@ -86,4 +90,5 @@ public class Greeting implements Initializable {
         UsernameLabel.setStyle("-fx-font-size:27;-fx-font:bold;");
         UsernameLabel.setText(EasyTransFromWindow.name);
     }
+
 }
